@@ -13,7 +13,7 @@ The code is written in MATLAB (R2023b).
 ## Preparation
 In order for all scripts to run faultless, the *Michigan image reconstruction toolbox (MIRT)* has to be downloaded from [https://web.eecs.umich.edu/~fessler/irt/fessler.tgz](https://web.eecs.umich.edu/~fessler/irt/fessler.tgz) or [http://web.eecs.umich.edu/~fessler/irt/irt](http://web.eecs.umich.edu/~fessler/irt/irt). Information about the toolbox can be found [here](https://web.eecs.umich.edu/~fessler/code/). The content of the toolbox (the folder named *irt*) needs to be placed inside the folder named *MIRT_toolbox* of this repository.
 
-Furthermore, the data used for this publication need to be downloaded from [zenodo](https://zenodo.org/). (Link will be updated once the zenodo repository is created.)
+Furthermore, the data used for this publication need to be downloaded from [zenodo](https://zenodo.org/doi/10.5281/zenodo.11258395).
 
 The repository should finally contain the following folders:
 * GSTF_code
