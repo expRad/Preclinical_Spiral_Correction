@@ -7,6 +7,7 @@ data_p3 = load('..\phantom_data\RMSEs_and_delays_p03.mat');
 data_mouse = load('..\invivo_data\RMSEs_and_delays_m96.mat');
 
 data = {data_p96, data_p16, data_p3, data_mouse};
+vals = zeros(2,4);
 
 %% Fit polynomial to error-vs-delay for each acquisition
 for i=1:length(data)
@@ -54,6 +55,7 @@ for i=1:length(data)
             end
         end
     end
+    vals(1,i) = data{i}.min_del;
 
     % % for gradient waveform RMSEs
     % extrema_del_gradx = roots([4*params_del_gradx(1) 3*params_del_gradx(2) 2*params_del_gradx(3) params_del_gradx(4)]);
@@ -81,6 +83,7 @@ for i=1:length(data)
             end
         end
     end
+    vals(2,i) = data{i}.min_girf;
 
     % % for gradient waveform RMSEs
     % extrema_girf_gradx = roots([4*params_girf_gradx(1) 3*params_girf_gradx(2) 2*params_girf_gradx(3) params_girf_gradx(4)]);
@@ -151,11 +154,11 @@ dred = [0.6350 0.0780 0.1840];
 %% Plot Figure 2
 if 1
     dx = 0.86;
-    dy = 0.17;
+    dy = 0.13;
         
-    figure('Units','centimeters','Position',[5 5 17.56 14]);
+    fig = figure('Units','centimeters','Position',[5 5 17.56 17]);
     i = 1;
-    ax1 = subplot('Position',[0.11 0.728 dx dy]);
+    ax1 = subplot('Position',[0.11 0.782 dx dy]);
     plot(data{i}.delays_del*1e6, data{i}.sum_abs_err_del, 'o', 'DisplayName','RMSE (delay corr.)');
     hold on;
     plot(data{i}.delays_girf*1e6, data{i}.sum_abs_err_girf, 'o', 'DisplayName','RMSE (GSTF+delay corr.)','Color',yellow);
@@ -164,19 +167,20 @@ if 1
     xline(data{i}.min_del*1e6,'--', 'DisplayName','optimum delay for isotropic delay correction','LineWidth',1.2);
     xline(data{i}.min_girf*1e6,'-.', 'DisplayName','optimum delay for GSTF+delay correction','LineWidth',1.2);
     ylabel('nRMSE (a.u.)');
-    leg = legend('numColumns',3,'Position',[0.11 0.922 0.86 0.0285]);
+    leg = legend('numColumns',3,'Position',[0.11 0.936 0.86 0.0235]);
     leg.ItemTokenSize = [17 5];
     ylim([0.005 0.04]);
     set(gca,'FontName','Times','Fontsize',9);
     text(-29.2,0.043,'(A)','FontName','Arial','Fontsize',11,'FontWeight','bold');
-    text(-29.2,-0.00,'(B)','FontName','Arial','Fontsize',11,'FontWeight','bold');
-    text(-29.2,-0.05,'(C)','FontName','Arial','Fontsize',11,'FontWeight','bold');
-    text(-29.2,-0.093,'(D)','FontName','Arial','Fontsize',11,'FontWeight','bold');
-    text(-20,0.058, 'delay correction','FontName','Times','Fontsize',9,'FontWeight','bold','HorizontalAlignment','center');
-    text(-5,0.058, 'GSTF+delay correction','FontName','Times','Fontsize',9,'FontWeight','bold','HorizontalAlignment','center');
+    text(-29.2,-0.005,'(B)','FontName','Arial','Fontsize',11,'FontWeight','bold');
+    text(-29.2,-0.058,'(C)','FontName','Arial','Fontsize',11,'FontWeight','bold');
+    text(-29.2,-0.104,'(D)','FontName','Arial','Fontsize',11,'FontWeight','bold');
+    text(-29.2,-0.163,'(E)','FontName','Arial','Fontsize',11,'FontWeight','bold');
+    text(-20,0.06, 'delay correction','FontName','Times','Fontsize',9,'FontWeight','bold','HorizontalAlignment','center');
+    text(-5,0.06, 'GSTF+delay correction','FontName','Times','Fontsize',9,'FontWeight','bold','HorizontalAlignment','center');
     i = i+1;
     
-    ax2 = subplot('Position',[0.11 0.52 dx dy]);
+    ax2 = subplot('Position',[0.11 0.613 dx dy]);
     plot(data{i}.delays_del*1e6, data{i}.sum_abs_err_del, 'o', 'DisplayName','RMSE delay');
     hold on;
     plot(data{i}.delays_del_fine*1e6, data{i}.fit_del_abs, '-', 'DisplayName','fit delay','LineWidth',1.2);
@@ -190,7 +194,7 @@ if 1
     set(gca,'FontName','Times','Fontsize',9);
     i = i+1;
     
-    ax3 = subplot('Position',[0.11 0.284 dx dy]);
+    ax3 = subplot('Position',[0.11 0.418 dx dy]);
     plot(data{i}.delays_del*1e6, data{i}.sum_abs_err_del, 'o', 'DisplayName','RMSE delay');
     hold on;
     plot(data{i}.delays_del_fine*1e6, data{i}.fit_del_abs, '-', 'DisplayName','fit delay','LineWidth',1.2);
@@ -204,7 +208,7 @@ if 1
     set(gca,'FontName','Times','Fontsize',9);
     i = i+1;
     
-    ax4 = subplot('Position',[0.11 0.074 dx dy]);
+    ax4 = subplot('Position',[0.11 0.245 dx dy]);
     plot(data{i}.delays_del*1e6, data{i}.sum_abs_err_del, 'o', 'DisplayName','RMSE delay');
     hold on;
     plot(data{i}.delays_del_fine*1e6, data{i}.fit_del_abs, '-', 'DisplayName','fit delay','LineWidth',1.2);
@@ -220,6 +224,19 @@ if 1
     
     linkaxes([ax1 ax2 ax3 ax4],'x');
     xlim(ax1,[-26 1]);
+
+    vals = vals.';
+    Mu = char(956);
+    Astr = reshape(cellstr(num2str(vals(:)*1e6,'%.1f')),size(vals));
+    for i=1:4
+        for j=1:2
+            Astr{i,j} = ['              ',Astr{i,j},' ',Mu,'s'];
+        end
+    end
+    correction = {'delay correction','GSTF+delay correction'};
+    vars = {'96 interleaves, phantom (A)','16 interleaves, phantom (B)','3 interleaves, phantom (C)','96 interleaves, in vivo (D)'};
+    uit = uitable(fig,'Data',Astr,'ColumnName',correction,'RowName',vars,'Units','normalized','Position',[0.05 0.015 0.94 0.153],'ColumnWidth',{158,158},'FontName','Times','Fontsize',11);
+
 end
 
 
