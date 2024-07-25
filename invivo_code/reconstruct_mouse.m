@@ -90,7 +90,7 @@ end
 
 % interpolate to ADC time grid
 t_ADC = (0:1:(size(raw,1)-1))*dwelltime_meas + dwelltime_meas/2;
-t_GRT = ((1:1:(size(spiral_x,1)))-0.5)*grad_raster_time; % + PVM_SpiralPreSize, aber ist bei uns immer(?) 0
+t_GRT = ((1:1:(size(spiral_x,1)))-0.5)*grad_raster_time;
 t_eps = 1e-12;
 t_GRT_00 = [-t_eps, t_GRT(1)-t_eps, t_GRT, t_GRT(end)+t_eps, t_GRT(end)+grad_raster_time+t_eps];
 
@@ -349,9 +349,10 @@ frame = 1;
 reco_cart = ifft2d(squeeze(cartesian_data.raw(:,:,frame)));
 
 %% Plot reconstructed images (Figure 8)
-greenColMap = [zeros(1, 132), linspace(0, 1, 124)];
-redColMap = [linspace(1, 0, 124), zeros(1, 132)];
-myColorMap = [redColMap; greenColMap; zeros(1, 256)]';
+yellowColMap = [linspace(255, 0, 124)', linspace(255, 0, 124)', zeros(124, 1); zeros(132, 3)];
+blueColMap = [zeros(132, 3); zeros(124, 1), linspace(0, 255, 124)', linspace(0, 255, 124)'];
+myColorMap = uint8(blueColMap + yellowColMap);
+
 
 figure('Units','centimeters','Position',[0 0 17.56 22],'Color','k');
 colormap gray;
