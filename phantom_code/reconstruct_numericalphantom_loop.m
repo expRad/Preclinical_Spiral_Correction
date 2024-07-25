@@ -171,9 +171,11 @@ for loop = 1:length(measurements)
     grad_y_tgirf = ppval(spiral_y_pp, t_GIRF);
 
     %% rotate in-plane gradients to XYZ coordinate system
+    % and calculate concomitant field for the position x0 = y0 = z0 = 1cm
     grad_physicalX = zeros(size(grad_x_tgirf));
     grad_physicalY = zeros(size(grad_x_tgirf));
     grad_physicalZ = zeros(size(grad_x_tgirf));
+    B_concomitant = zeros(size(grad_x_tgirf));
 
     for arm = 1:spiral_data.numInterleaves
         grad_xyz = [squeeze(grad_x_tgirf(:,arm)), squeeze(grad_y_tgirf(:,arm)), squeeze(zeros(size(t_GIRF.')))].';
@@ -181,12 +183,16 @@ for loop = 1:length(measurements)
         grad_physicalX(:,arm) = gradXYZ(1,:);
         grad_physicalY(:,arm) = gradXYZ(2,:);
         grad_physicalZ(:,arm) = gradXYZ(3,:);
+        B_concomitant(:,arm) = (grad_physicalZ(:,arm).^2/8/7)*(0.01^2+0.01^2) + (grad_physicalX(:,arm).^2+grad_physicalY(:,arm).^2)/2/7*0.01^2 -...
+                                (grad_physicalX(:,arm).*grad_physicalZ(:,arm))/2/7*0.01*0.01 - (grad_physicalY(:,arm).*grad_physicalZ(:,arm))/2/7*0.01*0.01;
+        % Equation for concomitant field from https://onlinelibrary.wiley.com/doi/10.1002/(SICI)1522-2594(199901)41:1%3C103::AID-MRM15%3E3.0.CO;2-M
     end
     
     grad_physicalX_pp = interp1(t_GIRF, grad_physicalX, 'linear','pp');
     grad_physicalY_pp = interp1(t_GIRF, grad_physicalY, 'linear','pp');
     measurements{loop}.grad_x_nom = ppval(grad_physicalX_pp, t_ADC);
     measurements{loop}.grad_y_nom = ppval(grad_physicalY_pp, t_ADC);
+    measurements{loop}.B_c = B_concomitant;
 
     %% zerofill gradients to avoid side effects by the fft calculation
     nExtra = round((1e6-size(grad_x_tgirf,1))/2);
@@ -524,7 +530,7 @@ text(0,10,'(O)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w'
 
 set(gcf, 'InvertHardcopy', 'off');
 
-%% Plot the line profiles (Figure 4, but with numerical phantom)
+%% Plot the line profiles
 figure('Units','centimeters','Position',[0 0 17.56 11]);
 colormap gray;
 x_line = 46;
@@ -662,6 +668,7 @@ hold on;
 plot(meas.t_ADC*1000, meas.grad_x_meas(:,arm)-meas.grad_x_del(:,arm),'LineWidth',1.2);
 plot(meas.t_ADC*1000, meas.grad_x_meas(:,arm)-meas.grad_x_girf(:,arm),'LineWidth',1.2);
 plot(meas.t_ADC*1000, meas.grad_x_meas(:,arm)-meas.grad_x_girfdel(:,arm),'LineWidth',1.2);
+% plot((1:size(meas.B_c,1))*1e-3, meas.B_c(:,arm), '--', 'LineWidth',1.2, 'Color',lblue);
 rectangle('Position',[0.02 -0.03 0.96 0.06],'LineStyle','-.','LineWidth',1.2,'EdgeColor','k');
 ylabel('\Delta Gradient_x (T/m)');
 ylim([-0.08 0.08]);
@@ -712,6 +719,7 @@ hold on;
 plot(meas.t_ADC*1000, meas.grad_x_meas(:,arm)-meas.grad_x_del(:,arm),'LineWidth',1.2);
 plot(meas.t_ADC*1000, meas.grad_x_meas(:,arm)-meas.grad_x_girf(:,arm),'LineWidth',1.2);
 plot(meas.t_ADC*1000, meas.grad_x_meas(:,arm)-meas.grad_x_girfdel(:,arm),'LineWidth',1.2);
+% plot((1:size(meas.B_c,1))*1e-3, meas.B_c(:,arm), '--', 'LineWidth',1.2, 'Color',lblue);
 yline(0);
 xline(0.38,'--');
 xline(0.7,'--');
@@ -749,6 +757,7 @@ hold on;
 plot(meas.t_ADC*1000, meas.grad_y_meas(:,arm)-meas.grad_y_del(:,arm),'LineWidth',1.2,'DisplayName','delay','Color',orange);
 plot(meas.t_ADC*1000, meas.grad_y_meas(:,arm)-meas.grad_y_girf(:,arm),'LineWidth',1.2,'DisplayName','GSTF','Color',yellow);
 plot(meas.t_ADC*1000, meas.grad_y_meas(:,arm)-meas.grad_y_girfdel(:,arm),'LineWidth',1.2,'DisplayName','GSTF with delay','Color',violet);
+% plot((1:size(meas.B_c,1))*1e-3, meas.B_c(:,arm), '--', 'LineWidth',1.2, 'Color',lblue);
 yline(0);
 xline(0.26,'--');
 xline(0.54,'--');
@@ -890,7 +899,51 @@ disp(['rmse_girf 1ms = ',num2str(rmse_girf)]);
 rmse_girfdel = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_girfdel(1:200,arm)).^2));
 disp(['rmse_girfdel 1ms = ',num2str(rmse_girfdel)]);
 
+%% Compare concomitant field effects to gradient deviations
+disp('96 interleaves:');
+disp(['max B_c = ',num2str(max(abs(measurements{1}.B_c),[],'all')),' T']);
+B_diff = (measurements{1}.grad_x_del - measurements{1}.grad_x_meas)*0.01;
+disp(['max gx_delay - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{1}.grad_y_del - measurements{1}.grad_y_meas)*0.01;
+disp(['max gy_delay - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{1}.grad_x_girf - measurements{1}.grad_x_meas)*0.01;
+disp(['max gx_girf - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{1}.grad_y_girf - measurements{1}.grad_y_meas)*0.01;
+disp(['max gy_girf - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{1}.grad_x_girfdel - measurements{1}.grad_x_meas)*0.01;
+disp(['max gx_girfdel - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{1}.grad_y_girfdel - measurements{1}.grad_y_meas)*0.01;
+disp(['max gy_girfdel - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
 
+disp('16 interleaves:');
+disp(['max B_c = ',num2str(max(abs(measurements{2}.B_c),[],'all')),' T']);
+B_diff = (measurements{2}.grad_x_del - measurements{2}.grad_x_meas)*0.01;
+disp(['max gx_delay - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{2}.grad_y_del - measurements{2}.grad_y_meas)*0.01;
+disp(['max gy_delay - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{2}.grad_x_girf - measurements{2}.grad_x_meas)*0.01;
+disp(['max gx_girf - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{2}.grad_y_girf - measurements{2}.grad_y_meas)*0.01;
+disp(['max gy_girf - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{2}.grad_x_girfdel - measurements{2}.grad_x_meas)*0.01;
+disp(['max gx_girfdel - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{2}.grad_y_girfdel - measurements{2}.grad_y_meas)*0.01;
+disp(['max gy_girfdel - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+
+disp('93 interleaves:');
+disp(['max B_c = ',num2str(max(abs(measurements{3}.B_c),[],'all')),' T']);
+B_diff = (measurements{3}.grad_x_del - measurements{3}.grad_x_meas)*0.01;
+disp(['max gx_delay - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{3}.grad_y_del - measurements{3}.grad_y_meas)*0.01;
+disp(['max gy_delay - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{3}.grad_x_girf - measurements{3}.grad_x_meas)*0.01;
+disp(['max gx_girf - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{3}.grad_y_girf - measurements{3}.grad_y_meas)*0.01;
+disp(['max gy_girf - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{3}.grad_x_girfdel - measurements{3}.grad_x_meas)*0.01;
+disp(['max gx_girfdel - gx_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
+B_diff = (measurements{3}.grad_y_girfdel - measurements{3}.grad_y_meas)*0.01;
+disp(['max gy_girfdel - gy_meas = ',num2str(max(abs(B_diff),[],'all')),' T']);
 
 
 
