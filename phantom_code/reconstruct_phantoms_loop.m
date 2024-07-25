@@ -514,7 +514,132 @@ text(0,10,'(O)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w'
 
 set(gcf, 'InvertHardcopy', 'off');
 
-%% Plot the line profiles (Figure 4)
+%% Plot difference images to ground truth (Figure 4)
+
+yellowColMap = [linspace(255, 0, 124)', linspace(255, 0, 124)', zeros(124, 1); zeros(132, 3)];
+blueColMap = [zeros(132, 3); zeros(124, 1), linspace(0, 255, 124)', linspace(0, 255, 124)'];
+myColorMap = uint8(blueColMap + yellowColMap);
+
+figure('Units','centimeters','Position',[0 0 17.56 19.2],'Color','k');
+colormap gray;
+c_lims1 = [-1 1]*0.2;
+c_lims2 = [-1 1]*0.1;
+c_lims3 = [-1 1]*0.05;
+
+dx = 0.31;
+dy = 0.193*24/19.2;
+x1 = 0.06;
+x2 = 0.37;
+x3 = 0.68;
+y1 = (0.785*24-24)/19.2+1;
+y2 = (0.59*24-24)/19.2+1;
+y3 = (0.395*24-24)/19.2+1;
+y4 = 0;
+
+% 96 interleaves, nominal
+ax1 = subplot('Position',[x1 y1 dx dy]);
+imagesc(abs(recos_nom(:,:,1))-abs(recos_meas(:,:,1)), c_lims1);
+axis image; axis off;
+colormap(ax1, myColorMap); colorbar('Color','w');
+xticklabels([]); yticklabels([]);
+title('96 interleaves','Color','w');
+text(-30,96, 'nominal - measured','Color','w','FontWeight','bold','HorizontalAlignment','center','Rotation',90,'FontName','Times','Fontsize',10);
+set(gca,'FontName','Times','Fontsize',9);
+text(0,10,'(A)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 16 interleaves, nominal
+ax2 = subplot('Position',[x2 y1 dx dy]);
+imagesc(abs(recos_nom(:,:,2))-abs(recos_meas(:,:,2)), c_lims2);
+axis image; axis off;
+colormap(ax2, myColorMap); colorbar('Color','w');
+title('16 interleaves','Color','w');
+set(gca,'FontName','Times','Fontsize',9);
+text(0,10,'(B)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 3 interleaves, nominal
+ax3 = subplot('Position',[x3 y1 dx dy]);
+imagesc(abs(recos_nom(:,:,3))-abs(recos_meas(:,:,3)), c_lims3);
+axis image; axis off;
+colormap(ax3, myColorMap); colorbar('Color','w');
+title('3 interleaves','Color','w');
+set(gca,'FontName','Times','Fontsize',9);
+text(0,10,'(C)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 96 interleaves, delay
+ax4 = subplot('Position',[x1 y2 dx dy]);
+imagesc(abs(recos_del(:,:,1))-abs(recos_meas(:,:,1)), c_lims1);
+axis image; axis off;
+colormap(ax4, myColorMap); colorbar('Color','w');
+xticklabels([]); yticklabels([]);
+text(-30,96, 'delay - measured','Color','w','FontWeight','bold','HorizontalAlignment','center','Rotation',90,'FontName','Times','Fontsize',10);
+set(gca,'FontName','Times','Fontsize',9);
+text(0,10,'(D)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 16 interleaves, delay
+ax5 = subplot('Position',[x2 y2 dx dy]);
+imagesc(abs(recos_del(:,:,2))-abs(recos_meas(:,:,2)), c_lims2);
+axis image; axis off;
+colormap(ax5, myColorMap); colorbar('Color','w');
+text(0,10,'(E)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 3 interleaves, delay
+ax6 = subplot('Position',[x3 y2 dx dy]);
+imagesc(abs(recos_del(:,:,3))-abs(recos_meas(:,:,3)), c_lims3);
+axis image; axis off;
+colormap(ax6, myColorMap); colorbar('Color','w');
+text(0,10,'(F)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 96 interleaves, gstf
+ax7 = subplot('Position',[x1 y3 dx dy]);
+imagesc(abs(recos_girf(:,:,1))-abs(recos_meas(:,:,1)), c_lims1);
+axis image; axis off;
+colormap(ax7, myColorMap); colorbar('Color','w');
+xticklabels([]); yticklabels([]);
+text(-30,96, 'GSTF - measured','Color','w','FontWeight','bold','HorizontalAlignment','center','Rotation',90,'FontName','Times','Fontsize',10);
+set(gca,'FontName','Times','Fontsize',9);
+text(0,10,'(G)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 16 interleaves, gstf
+ax8 = subplot('Position',[x2 y3 dx dy]);
+imagesc(abs(recos_girf(:,:,2))-abs(recos_meas(:,:,2)), c_lims2);
+axis image; axis off;
+colormap(ax8, myColorMap); colorbar('Color','w');
+text(0,10,'(H)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 3 interleaves, gstf
+ax9 = subplot('Position',[x3 y3 dx dy]);
+imagesc(abs(recos_girf(:,:,3))-abs(recos_meas(:,:,3)), c_lims3);
+axis image; axis off;
+colormap(ax9, myColorMap); colorbar('Color','w');
+text(0,10,'(I)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 96 interleaves, gstf + delay
+ax10 = subplot('Position',[x1 y4 dx dy]);
+imagesc(abs(recos_girfdel(:,:,1))-abs(recos_meas(:,:,1)), c_lims1);
+axis image; axis off;
+colormap(ax10, myColorMap); colorbar('Color','w');
+xticklabels([]); yticklabels([]);
+text(-30,96, 'GSTF+delay - measured','Color','w','FontWeight','bold','HorizontalAlignment','center','Rotation',90,'FontName','Times','Fontsize',10);
+set(gca,'FontName','Times','Fontsize',9);
+text(0,10,'(J)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 16 interleaves, gstf + delay
+ax11 = subplot('Position',[x2 y4 dx dy]);
+imagesc(abs(recos_girfdel(:,:,2))-abs(recos_meas(:,:,2)), c_lims2);
+axis image; axis off;
+colormap(ax11, myColorMap); colorbar('Color','w');
+text(0,10,'(K)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+% 3 interleaves, gstf + delay
+ax12 = subplot('Position',[x3 y4 dx dy]);
+imagesc(abs(recos_girfdel(:,:,3))-abs(recos_meas(:,:,3)), c_lims3);
+axis image; axis off;
+colormap(ax12, myColorMap); colorbar('Color','w');
+text(0,10,'(L)','FontName','Arial','Fontsize',11,'FontWeight','bold','Color','w');
+
+set(gcf, 'InvertHardcopy', 'off');
+
+%% Plot the line profiles
 figure('Units','centimeters','Position',[0 0 17.56 11]);
 colormap gray;
 x_line = 46;
@@ -745,28 +870,77 @@ linkaxes([ax3 ax4 ax5 ax6],'x');
 xlim(ax3,[0 1]);
 
 %% Plot trajectories (Figure 6)
-figure('Units','centimeters','Position',[0 0 17.56 13]);
 
-ax1 = subplot('Position',[0.07 0.31 0.4 0.7]);
-plot(meas.traj_nom(:,arm),'LineWidth',1.2,'DisplayName','nominal');
+vals = [];
+rmse_nom = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_nom(:,arm)).^2));
+vals(1,1) = string(num2str(round(rmse_nom,3),'%.3f'));
+disp(['rmse_nom = ',num2str(rmse_nom),' (',num2str(rmse_nom/size(meas.traj_meas,1)),')']);
+rmse_del = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_del(:,arm)).^2));
+vals(2,1) = string(num2str(round(rmse_del,3)));
+disp(['rmse_del = ',num2str(rmse_del),' (',num2str(rmse_del/size(meas.traj_meas,1)),')']);
+rmse_girf = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_girf(:,arm)).^2));
+vals(3,1) = string(num2str(round(rmse_girf,3)));
+disp(['rmse_girf = ',num2str(rmse_girf),' (',num2str(rmse_girf/size(meas.traj_meas,1)),')']);
+rmse_girfdel = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_girfdel(:,arm)).^2));
+vals(4,1) = string(num2str(round(rmse_girfdel,3)));
+disp(['rmse_girfdel = ',num2str(rmse_girfdel),' (',num2str(rmse_girfdel/size(meas.traj_meas,1)),')']);
+disp(' ');
+rmse_nom = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_nom(1:20,arm)).^2));
+vals(1,2) = string(num2str(round(rmse_nom,3)));
+disp(['rmse_nom 0.1ms = ',num2str(rmse_nom),' (',num2str(rmse_nom/20),')']);
+rmse_del = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_del(1:20,arm)).^2));
+vals(2,2) = string(num2str(round(rmse_del,3)));
+disp(['rmse_del 0.1ms = ',num2str(rmse_del),' (',num2str(rmse_del/20),')']);
+rmse_girf = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_girf(1:20,arm)).^2));
+vals(3,2) = string(num2str(round(rmse_girf,3)));
+disp(['rmse_girf 0.1ms = ',num2str(rmse_girf),' (',num2str(rmse_girf/20),')']);
+rmse_girfdel = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_girfdel(1:20,arm)).^2));
+vals(4,2) = string(num2str(round(rmse_girfdel,3)));
+disp(['rmse_girfdel 0.1ms = ',num2str(rmse_girfdel),' (',num2str(rmse_girfdel/20),')']);
+disp(' ');
+rmse_nom = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_nom(1:200,arm)).^2));
+vals(1,3) = string(num2str(round(rmse_nom,3)));
+disp(['rmse_nom 1ms = ',num2str(rmse_nom),' (',num2str(rmse_nom/200),')']);
+rmse_del = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_del(1:200,arm)).^2));
+vals(2,3) = string(num2str(round(rmse_del,3)));
+disp(['rmse_del 1ms = ',num2str(rmse_del),' (',num2str(rmse_del/200),')']);
+rmse_girf = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_girf(1:200,arm)).^2));
+vals(3,3) = string(num2str(round(rmse_girf,3)));
+disp(['rmse_girf 1ms = ',num2str(rmse_girf),' (',num2str(rmse_girf/200),')']);
+rmse_girfdel = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_girfdel(1:200,arm)).^2));
+vals(4,3) = string(num2str(round(rmse_girfdel,3)));
+disp(['rmse_girfdel 1ms = ',num2str(rmse_girfdel),' (',num2str(rmse_girfdel/200),')']);
+Astr = reshape(cellstr(num2str(vals(:),'%.3f')),size(vals));
+for i=1:4
+    for j=1:3
+        Astr{i,j} = ['                ',Astr{i,j}];
+    end
+end
+
+
+fig = figure('Units','centimeters','Position',[0 0 17.56 17]);
+
+ax1 = subplot('Position',[0.07 0.47 0.4 0.53]);
+plot(ax1,meas.traj_nom(:,arm),'LineWidth',1.2,'DisplayName','nominal');
 hold on;
-plot(meas.traj_del(:,arm),'LineWidth',1.2,'DisplayName','delay');
-plot(meas.traj_girf(:,arm),'LineWidth',1.2,'DisplayName','GSTF');
-plot(meas.traj_girfdel(:,arm),'LineWidth',1.2,'DisplayName','GSTF+delay');
-plot(meas.traj_meas(:,arm),'LineWidth',1.2,'DisplayName','measured');
+plot(ax1,meas.traj_del(:,arm),'LineWidth',1.2,'DisplayName','delay');
+plot(ax1,meas.traj_girf(:,arm),'LineWidth',1.2,'DisplayName','GSTF');
+plot(ax1,meas.traj_girfdel(:,arm),'LineWidth',1.2,'DisplayName','GSTF+delay');
+plot(ax1,meas.traj_meas(:,arm),'LineWidth',1.2,'DisplayName','measured');
 axis image;
-xlabel('k_x (1/m)');
-ylabel('k_y (1/m)');
-xlim([-3.4 3.4]);
-ylim([-3.4 3.4]);
-legend('numColumns',5,'Position',[0.07 0.95 0.91 0.04]);
+xlabel(ax1,'k_x (1/m)');
+ylabel(ax1,'k_y (1/m)');
+xlim(ax1,[-3.4 3.4]);
+ylim(ax1,[-3.4 3.4]);
+legend('numColumns',5,'Position',[0.07 0.96 0.91 0.032]);
 rectangle('Position',[-1 1.5 1 1],'LineStyle','--');
 rectangle('Position',[0 -2.7 1 1],'LineStyle','-.');
 set(gca,'FontName','Times','Fontsize',9);
 text(-4.4,3.3,'(A)','FontName','Arial','Fontsize',11,'FontWeight','bold');
 text(3.9,3.3,'(B)','FontName','Arial','Fontsize',11,'FontWeight','bold');
+text(-4.4,-9,'(G)','FontName','Arial','Fontsize',11,'FontWeight','bold');
 
-ax1a = axes('Position',[0.04 0.05 0.21 0.25]);
+ax1a = axes('Position',[0.04 0.26 0.21 0.19]);
 plot(meas.traj_nom(:,arm),'LineWidth',1.2);
 hold on;
 plot(meas.traj_del(:,arm),'LineWidth',1.2);
@@ -780,7 +954,7 @@ rectangle('Position',[-1 1.5 1 1],'LineStyle','--','LineWidth',1.2);
 set(gca,'FontName','Times','Fontsize',9);
 text(-0.97,2.4,'(C)','FontName','Arial','Fontsize',11,'FontWeight','bold');
 
-ax1b = axes('Position',[0.28 0.05 0.21 0.25]);
+ax1b = axes('Position',[0.28 0.26 0.21 0.19]);
 plot(meas.traj_nom(:,arm),'LineWidth',1.2);
 hold on;
 plot(meas.traj_del(:,arm),'LineWidth',1.2);
@@ -794,8 +968,7 @@ rectangle('Position',[0 -2.7 1 1],'LineStyle','-.','LineWidth',1.2);
 set(gca,'FontName','Times','Fontsize',9);
 text(0.03,-1.8,'(D)','FontName','Arial','Fontsize',11,'FontWeight','bold');
 
-
-ax2 = subplot('Position',[0.58 0.31 0.4 0.7]);
+ax2 = subplot('Position',[0.58 0.47 0.4 0.53]);
 plot(meas.traj_meas(:,arm)-meas.traj_nom(:,arm),'LineWidth',1.2);
 hold on;
 plot(meas.traj_meas(:,arm)-meas.traj_del(:,arm),'LineWidth',1.2);
@@ -810,7 +983,7 @@ xline(0,'--');
 yline(0,'--');
 set(gca,'FontName','Times','Fontsize',9);
 
-ax2a = axes('Position',[0.55 0.05 0.21 0.25]);
+ax2a = axes('Position',[0.55 0.26 0.21 0.19]);
 idx_end = 20;
 plot(meas.traj_meas(1:idx_end,arm)-meas.traj_nom(1:idx_end,arm),'LineWidth',1.2);
 hold on;
@@ -828,7 +1001,7 @@ text(0,-0.0069,'  0 - 0.1 ms','FontName','Times','Fontsize',9);
 set(gca,'FontName','Times','Fontsize',9);
 text(-0.0072,0.0064,'(E)','FontName','Arial','Fontsize',11,'FontWeight','bold');
 
-ax2b = axes('Position',[0.79 0.05 0.21 0.25]);
+ax2b = axes('Position',[0.79 0.26 0.21 0.19]);
 idx_end = 200;
 plot(meas.traj_meas(1:idx_end,arm)-meas.traj_nom(1:idx_end,arm),'LineWidth',1.2);
 hold on;
@@ -844,38 +1017,15 @@ text(0,-0.052,'  0 - 1 ms','FontName','Times','Fontsize',9);
 set(gca,'FontName','Times','Fontsize',9);
 text(-0.055,0.048,'(F)','FontName','Arial','Fontsize',11,'FontWeight','bold');
 
-rmse_nom = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_nom(:,arm)).^2));
-disp(['rmse_nom = ',num2str(rmse_nom)]);
-rmse_del = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_del(:,arm)).^2));
-disp(['rmse_del = ',num2str(rmse_del)]);
-rmse_girf = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_girf(:,arm)).^2));
-disp(['rmse_girf = ',num2str(rmse_girf)]);
-rmse_girfdel = sqrt(mean(abs(meas.traj_meas(:,arm)-meas.traj_girfdel(:,arm)).^2));
-disp(['rmse_girfdel = ',num2str(rmse_girfdel)]);
-disp(' ');
-rmse_nom = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_nom(1:20,arm)).^2));
-disp(['rmse_nom 0.1ms = ',num2str(rmse_nom)]);
-rmse_del = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_del(1:20,arm)).^2));
-disp(['rmse_del 0.1ms = ',num2str(rmse_del)]);
-rmse_girf = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_girf(1:20,arm)).^2));
-disp(['rmse_girf 0.1ms = ',num2str(rmse_girf)]);
-rmse_girfdel = sqrt(mean(abs(meas.traj_meas(1:20,arm)-meas.traj_girfdel(1:20,arm)).^2));
-disp(['rmse_girfdel 0.1ms = ',num2str(rmse_girfdel)]);
-disp(' ');
-rmse_nom = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_nom(1:200,arm)).^2));
-disp(['rmse_nom 1ms = ',num2str(rmse_nom)]);
-rmse_del = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_del(1:200,arm)).^2));
-disp(['rmse_del 1ms = ',num2str(rmse_del)]);
-rmse_girf = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_girf(1:200,arm)).^2));
-disp(['rmse_girf 1ms = ',num2str(rmse_girf)]);
-rmse_girfdel = sqrt(mean(abs(meas.traj_meas(1:200,arm)-meas.traj_girfdel(1:200,arm)).^2));
-disp(['rmse_girfdel 1ms = ',num2str(rmse_girfdel)]);
+trajectories = {'nominal','delay','GSTF','GSTF+delay'};
+tableTitle = 'RMSE to measured trajectory';
+vars = {'RMSE whole interleaf (1/m)','RMSE first 0.1 ms (1/m)','RMSE first 1 ms (1/m)'};
+uit = uitable(fig,'Data',Astr,'ColumnName',vars,'RowName',trajectories,'Units','normalized','Position',[0.05 0.02 0.94 0.153],'ColumnWidth',{170,170,169},'FontName','Times','Fontsize',11);
 
 %% Graphical abstract
 
 figure('Units','centimeters','Position',[1 1 6 5]);
 colormap 'gray';
-% colormap 'jet';
 
 ax1 = axes('Position',[0 0.5 0.33 0.4]);
 plot(meas.traj_nom(1:end-meas.nPost,:),'LineWidth',0.1);
