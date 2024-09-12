@@ -1,4 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Copyright (c) 2024 Hannah Scholten
+%
 % This script demonstrates that the lowpass characteristic of the gradient
 % system leads to a smaller appearance of the object if it is not
 % compensated for.

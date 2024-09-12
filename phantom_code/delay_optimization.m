@@ -1,3 +1,5 @@
+% Copyright (c) 2024 Hannah Scholten
+
 clear all;
 
 % Load data

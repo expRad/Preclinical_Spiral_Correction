@@ -1,4 +1,6 @@
 classdef GIRF_matrix < handle
+
+    % Copyright (c) 2024 Hannah Scholten
     
     properties
         girf

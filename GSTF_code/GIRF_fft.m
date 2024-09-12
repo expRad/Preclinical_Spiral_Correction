@@ -1,4 +1,6 @@
 classdef GIRF_fft < handle
+
+    % Copyright (c) 2024 Hannah Scholten
     
     properties
         gstf

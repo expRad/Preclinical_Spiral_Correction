@@ -1,4 +1,6 @@
 function [ probingMatrix ] = createProbingMatrix( positions )
+%
+% Copyright (c) 2024 Hannah Scholten
 %%
 numVoxels = size(positions,1); % positions has size [numVoxels, 3]
 

@@ -1,4 +1,6 @@
 function [ positions ] = createPositionArray( orientation, numPE, numSlices, FOV, PosSlices )
+%
+% Copyright (c) 2024 Hannah Scholten
 %%
 positions = zeros(numPE, numPE, numSlices, 3); % [PE steps, partitions, slices, 3], last dimension is [x y z]
 

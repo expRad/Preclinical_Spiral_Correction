@@ -1,5 +1,8 @@
 function [ out_signals, magnitudeTooLow ] = calcMeasOutput_Bruker_avgComplex( girf_data, numTriang, calcChannels, t_ADC)
-%CALCMEASOUTPUT calculates the measured gradient output 
+% CALCMEASOUTPUT calculates the measured gradient output 
+%
+% Copyright (c) 2024 Hannah Scholten
+%
 %%
 kspace = girf_data.raw; % [ROP, slices, rep, triangles]
 numROP = size(kspace,1); % number of Read Out Points
