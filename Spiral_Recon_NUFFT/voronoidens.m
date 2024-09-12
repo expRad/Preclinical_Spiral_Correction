@@ -8,6 +8,9 @@ function area = voronoidens(k);
 %
 % Written by John Pauly, modified by Michael Lustig
 
+% This script is from the SparseMRI V2.0 collection by Michael Lustig, which can be
+% downloaded here: https://people.eecs.berkeley.edu/~mlustig/Software.html
+
 
 r = max(abs(k(:)));
 k = [k(:); r*1.005*exp(i*2*pi*[1:256]'/256)];

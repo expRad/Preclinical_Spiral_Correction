@@ -32,6 +32,9 @@ function  res = NUFFT(k,w,phase,shift,imSize, mode)
 % (c) Michael Lustig 2007
 %
 
+% This script is from the SparseMRI V2.0 collection by Michael Lustig, which can be
+% downloaded here: https://people.eecs.berkeley.edu/~mlustig/Software.html
+
 
 if exist('nufft') <2
 	error('must have Jeffery Fessler''s NUFFT code in the path');
